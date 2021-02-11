@@ -97,6 +97,7 @@ export class AppService {
     const { window } = new JSDOM(data);
     const s = window.document.getElementsByClassName('perk-page');
     return {
+      name: champion.name,
       primary: [...s[0].getElementsByClassName('perk-page__row')].map(
         (parentEl) => {
           const list = [...parentEl.getElementsByClassName('perk-page__item')];
