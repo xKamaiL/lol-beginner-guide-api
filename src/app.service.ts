@@ -54,7 +54,7 @@ export class AppService {
     console.log(
       `${
         this.OP_GG_ENDPOINT
-      }/champion/${champion.name.toLowerCase()}/statistics`,
+      }champion/${champion.name.toLowerCase()}/statistics`,
     );
     try {
       await axios.get(
@@ -73,7 +73,7 @@ export class AppService {
           .reverse()[0] as Positions;
       }
     }
-    return position;
+    return position === Positions.BotLane ? Positions.ADC : position;
   }
 
   async fetchRuneConfig(championName: string) {

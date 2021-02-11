@@ -4,4 +4,5 @@ export enum Positions {
   TopLane = 'top',
   Support = 'support',
   Jungle = 'jungle',
+  ADC = 'ADC',
 }
