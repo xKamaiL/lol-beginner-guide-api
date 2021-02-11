@@ -8,6 +8,16 @@ import * as https from 'https';
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 
+const mappingResult = (el) => {
+  const img = el.getElementsByTagName('img')[0];
+  const runeName = img.title.split('<br>')[0].replace(/<[^>]+>/g, '');
+  return {
+    runeName,
+    src: `https://${img.src}`,
+    isActive: el.className.split(' ').indexOf('perk-page__item--active') > -1,
+  };
+};
+
 @Injectable()
 export class AppService {
   private OP_GG_ENDPOINT = `https://th.op.gg/`;
@@ -71,7 +81,6 @@ export class AppService {
       headers: {
         accept:
           'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'accept-language': 'de-DE,de;q=0.9',
         'cache-control': 'no-cache',
         pragma: 'no-cache',
         'sec-fetch-dest': 'document',
@@ -82,12 +91,22 @@ export class AppService {
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36',
       },
     });
-    const { window } = new JSDOM(data.data);
-    const s = [...window.document.getElementsByClassName('.perk-page')].slice(
-      0,
-      2,
-    );
-    console.log(s);
-    return s;
+    // console.log(API_RUNE(champion.key, position));
+    const { window } = new JSDOM(data);
+    const s = window.document.getElementsByClassName('perk-page');
+    return {
+      primary: [...s[0].getElementsByClassName('perk-page__row')].map(
+        (parentEl) => {
+          const list = [...parentEl.getElementsByClassName('perk-page__item')];
+          return list.map(mappingResult);
+        },
+      ),
+      secondary: [...s[1].getElementsByClassName('perk-page__row')].map(
+        (parentEl) => {
+          const list = [...parentEl.getElementsByClassName('perk-page__item')];
+          return list.map(mappingResult);
+        },
+      ),
+    };
   }
 }
