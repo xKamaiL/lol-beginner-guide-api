@@ -27,6 +27,7 @@
     "axios": "^0.21.1",
     "jsdom": "^16.4.0",
     "lodash": "^4.17.20",
+    "node-html-parser": "^2.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3"

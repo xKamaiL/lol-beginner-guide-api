@@ -5,6 +5,9 @@ import { IChampion } from './shared/interfaces/Champion.interface';
 import { Positions } from './shared/positions.enum';
 import * as https from 'https';
 
+const jsdom = require('jsdom');
+const { JSDOM } = jsdom;
+
 @Injectable()
 export class AppService {
   private OP_GG_ENDPOINT = `https://th.op.gg/`;
@@ -66,11 +69,25 @@ export class AppService {
     });
     const { data } = await instance.get(API_RUNE(champion.key, position), {
       headers: {
-        'x-requested-with': 'XMLHttpRequest',
-        Accept: '*/*',
+        accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'accept-language': 'de-DE,de;q=0.9',
+        'cache-control': 'no-cache',
+        pragma: 'no-cache',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'none',
+        'upgrade-insecure-requests': '1',
+        'user-agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36',
       },
     });
-    console.log(data.config);
-    return data;
+    const { window } = new JSDOM(data.data);
+    const s = [...window.document.getElementsByClassName('.perk-page')].slice(
+      0,
+      2,
+    );
+    console.log(s);
+    return s;
   }
 }
