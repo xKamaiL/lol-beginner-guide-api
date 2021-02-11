@@ -38,7 +38,9 @@ export class AppService {
     const ver = await this.getCurrentVersion();
     const { data } = await axios.get(API_CHAMPION_LIST(ver));
     const searchName = Object.keys(data.data).find((champion) => {
-      return champion.indexOf(name) > -1;
+      return (
+        champion.indexOf(name.charAt(0).toUpperCase() + name.slice(1)) > -1
+      );
     });
     if (typeof searchName === 'undefined') {
       throw new NotFoundException('Champion name not found');
