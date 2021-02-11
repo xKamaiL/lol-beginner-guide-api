@@ -51,6 +51,11 @@ export class AppService {
 
   async getPosition(champion: IChampion): Promise<Positions> {
     let position: Positions = Positions.TopLane;
+    console.log(
+      `${
+        this.OP_GG_ENDPOINT
+      }/champion/${champion.name.toLowerCase()}/statistics`,
+    );
     try {
       await axios.get(
         `${
@@ -61,8 +66,8 @@ export class AppService {
         },
       );
     } catch (e) {
-      if (e.response.status === 302) {
-        console.log(e.response.headers.location.split('/').reverse()[0]);
+      if (e.response.status === 301) {
+        console.log(e.response.headers.location);
         position = e.response.headers.location
           .split('/')
           .reverse()[0] as Positions;
@@ -79,6 +84,7 @@ export class AppService {
         rejectUnauthorized: false,
       }),
     });
+    console.log(API_RUNE(champion.key, position));
     const { data } = await instance.get(API_RUNE(champion.key, position), {
       headers: {
         accept:
