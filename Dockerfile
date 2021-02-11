@@ -1,22 +1,23 @@
-# Builder container
-FROM node:12-alpine as builder
-
-ENV NODE_ENV=production
-
-RUN apk --no-cache add python make g++
-
-COPY package.json ./
-COPY yarn.lock ./
-
-RUN yarn install --frozen-lockfile --non-interactive
-
-# Service container
+# Use the official lightweight Node.js 12 image.
+# https://hub.docker.com/_/node
 FROM node:12-alpine
 
+# Create and change to the app directory.
 WORKDIR /usr/src/app
-COPY --from=builder node_modules node_modules
 
-COPY build/ .
-COPY docker-entrypoint.sh ./
+# Copy application dependency manifests to the container image.
+# A wildcard is used to ensure both package.json AND package-lock.json are copied.
+# Copying this separately prevents re-running npm install on every code change.
+COPY package*.json ./
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+# Install dependencies
+RUN npm install
+
+# Copy local code to the container image.
+COPY . ./
+
+# Build the application
+RUN npm run build
+
+# Run the web service on container startup.
+CMD [ "npm", "run", "start:prod" ]

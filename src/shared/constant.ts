@@ -6,4 +6,4 @@ export const API_CHAMPION_LIST = (version) =>
   `https://ddragon.leagueoflegends.com/cdn/${version}/data/th_TH/champion.json`;
 
 export const API_RUNE = (name: string, position: Positions) =>
-  `https://th.op.gg/champion/ajax/statistics/runeList/championId=${name}&position=${position.toUpperCase()}`;
+  `http://www.op.gg/champion/ajax/statistics/runeList/championId=22&position=ADC`;

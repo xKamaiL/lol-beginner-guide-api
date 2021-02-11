@@ -3,6 +3,7 @@ import { API_CHAMPION_LIST, API_RUNE, API_VERSION } from './shared/constant';
 import axios from 'axios';
 import { IChampion } from './shared/interfaces/Champion.interface';
 import { Positions } from './shared/positions.enum';
+import * as https from 'https';
 
 @Injectable()
 export class AppService {
@@ -58,9 +59,18 @@ export class AppService {
   async fetchRuneConfig(championName: string) {
     const champion = await this.searchForChampionName(championName);
     const position = await this.getPosition(champion);
-    const { data } = await axios.get(
-      API_RUNE(champion.name.toLowerCase(), position),
-    );
-    return data.data;
+    const instance = axios.create({
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: false,
+      }),
+    });
+    const { data } = await instance.get(API_RUNE(champion.key, position), {
+      headers: {
+        'x-requested-with': 'XMLHttpRequest',
+        Accept: '*/*',
+      },
+    });
+    console.log(data.config);
+    return data;
   }
 }
