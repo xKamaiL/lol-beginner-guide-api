@@ -51,11 +51,6 @@ export class AppService {
 
   async getPosition(champion: IChampion): Promise<Positions> {
     let position: Positions = Positions.TopLane;
-    console.log(
-      `${
-        this.OP_GG_ENDPOINT
-      }champion/${champion.name.toLowerCase()}/statistics`,
-    );
     try {
       await axios.get(
         `${
@@ -76,7 +71,23 @@ export class AppService {
     return position === Positions.BotLane ? Positions.ADC : position;
   }
 
-  async fetchRuneConfig(championName: string) {
+  async getDetail(name: string) {
+    return axios.get(
+      `${this.OP_GG_ENDPOINT}/champion/${name.toLowerCase()}/statistics`,
+    );
+  }
+
+  async fetchCounterChampion(championName: string): Promise<any> {
+    const champion = await this.searchForChampionName(championName);
+    const { data } = await this.getDetail(champion.name);
+    const { window } = new JSDOM(data);
+
+    return [
+      ...window.document.getElementsByClassName('matchup-summary__name'),
+    ].map((s) => s.innerHTML);
+  }
+
+  async fetchRuneConfig(championName: string): Promise<any> {
     const champion = await this.searchForChampionName(championName);
     const position = await this.getPosition(champion);
     const instance = axios.create({
@@ -84,7 +95,6 @@ export class AppService {
         rejectUnauthorized: false,
       }),
     });
-    console.log(API_RUNE(champion.key, position));
     const { data } = await instance.get(API_RUNE(champion.key, position), {
       headers: {
         accept:
